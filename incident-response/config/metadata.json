@@ -1,0 +1,16 @@
+{
+    "service_name": "Core-Platform-API",
+    "team_name": "SRE-Phoenix",
+    "project_id": "PRJ-GEN-001",
+    "notification_emails": [
+        "sre-leads@example.com",
+        "cto-office@example.com",
+        "incident-room@example.com"
+    ],
+    "auto_tags": [
+        "incident",
+        "production",
+        "needs-review"
+    ],
+    "jira_project": "SRE"
+}
