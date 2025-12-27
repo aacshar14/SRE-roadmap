@@ -1,15 +1,16 @@
 # SRE Roadmap
 
-Este repositorio contiene un roadmap para el aprendizaje y desarrollo de habilidades en Site Reliability Engineering (SRE).
+This repository contains a roadmap for learning and developing Site Reliability Engineering (SRE) skills.
 
-## Objetivos
+## Objectives
 
-- Fundamentos de SRE
-- Observabilidad y Monitoreo
-- Infraestructura como Código (IaC)
-- Automatización y CI/CD
-- Respuesta a Incidentes
+- SRE Foundations
+- Observability and Monitoring
+- Infrastructure as Code (IaC)
+- Automation and CI/CD
+- Incident Response
 
-## Estructura
+## Structure
 
-(Próximamente)
+- [Workshop](./workshop/README.md): 10 steps and 5 Golden Signals.
+

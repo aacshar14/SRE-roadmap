@@ -1,75 +1,75 @@
-# SRE Workshop: Fundamentos y Práctica
+# SRE Workshop: Fundamentals and Practice
 
-Este workshop está diseñado para introducirte en los conceptos clave de Site Reliability Engineering (SRE), con un enfoque especial en la medición de confiabilidad a través de SLIs y SLOs.
+This workshop is designed to introduce you to the key concepts of Site Reliability Engineering (SRE), with a special focus on measuring reliability through SLIs and SLOs.
 
-## Parte 1: Las 5 Golden Signals (Señales de Oro)
+## Part 1: The 5 Golden Signals
 
-Para tener una observabilidad efectiva, Google recomienda enfocarse en estas señales clave. Hemos añadido "Disponibilidad" como la quinta señal esencial.
+For effective observability, Google recommends focusing on these key signals. We have added "Availability" as the fifth essential signal.
 
-1.  **Latencia (Latency):** El tiempo que tarda una solicitud en ser atendida.
-    *   *Importante:* Distingue entre latencia de éxitos y de errores. Una respuesta de error 500 puede ser muy rápida, sesgando tus métricas.
-2.  **Tráfico (Traffic):** La demanda que recibe tu sistema.
-    *   *Ejemplo:* Peticiones HTTP por segundo, o transacciones de base de datos.
-3.  **Errores (Errors):** La tasa de solicitudes que fallan.
-    *   *Tipos:* Explícitos (HTTP 500), implícitos (HTTP 200 pero con contenido vacío o incorrecto), o por política (respuesta > 1 seg).
-4.  **Saturación (Saturation):** Qué tan "lleno" está tu servicio.
-    *   *Métrica:* Uso de CPU, memoria, I/O. Mide la fracción "ocupada" de tu recurso más limitado.
-5.  **Disponibilidad (Availability):** El porcentaje de tiempo que el sistema es utilizable.
-    *   *Relación:* A menudo se define en función de las tasas de éxito de las otras señales.
-
----
-
-## Parte 2: Los 10 Pasos Fundamentales de SRE
-
-1.  **Fundamentos y Cultura:** SRE no es solo tecnología. Se basa en una cultura "blameless" (sin culpa) y seguridad psicológica para reportar incidentes.
-2.  **SLIs (Service Level Indicators):** ¿Qué métrica precisa nos dice si el usuario está feliz? (ej. latencia del 99% de las peticiones).
-3.  **SLOs (Service Level Objectives):** El objetivo numérico para ese SLI (ej. 99.9% de los requests deben ser exitosos).
-4.  **Error Budgets (Presupuesto de Error):** 100% - SLO. Es el margen que tenemos para fallar. Si se agota, congelamos lanzamientos para estabilizar.
-5.  **Toil Reduction (Reducción de Trabajo Penoso):** Automatizar tareas manuales, repetitivas y sin valor estratégico que crecen línealmente con el servicio.
-6.  **Monitoreo y Observabilidad:** Implementar las 5 Golden Signals. Pasar de "¿está arriba el servidor?" a "¿funciona el servicio para el usuario?".
-7.  **Respuesta a Incidentes:** Tener roles claros (Comandante de Incidente, Comunicación, Ops) y procedimientos definidos antes de que ocurra el fuego.
-8.  **Postmortems:** Análisis detallado tras un incidente. El objetivo no es buscar culpables, sino arreglar el proceso o sistema que permitió el fallo.
-9.  **Capacity Planning:** Predecir crecimiento futuro (orgánico o por lanzamientos) para asegurar recursos suficientes antes de la saturación.
-10. **Chaos Engineering & Resiliencia:** Romper cosas a propósito en entornos controlados para entrenar al equipo y validar que los sistemas de recuperación funcionan.
+1.  **Latency:** The time it takes to serve a request.
+    *   *Important:* Distinguish between success and error latency. A 500 error response might be very fast, skewing your metrics.
+2.  **Traffic:** The demand placed on your system.
+    *   *Example:* HTTP requests per second, or database transactions.
+3.  **Errors:** The rate of requests that fail.
+    *   *Types:* Explicit (HTTP 500), implicit (HTTP 200 but with empty or wrong content), or by policy (response > 1 sec).
+4.  **Saturation:** How "full" your service is.
+    *   *Metric:* CPU, memory, I/O usage. Measures the "busy" fraction of your most constrained resource.
+5.  **Availability:** The percentage of time the system is usable.
+    *   *Relation:* Often defined as a function of success rates from the other signals.
 
 ---
 
-## Parte 3: Deep Dive - SLOs y SLIs
+## Part 2: The 10 Fundamental Steps of SRE
 
-El núcleo de SRE es tomar decisiones basadas en datos, y para eso necesitamos definir qué significa "confiabilidad".
+1.  **Foundations & Culture:** SRE is not just technology. It relies on a "blameless" culture and psychological safety to report incidents.
+2.  **SLIs (Service Level Indicators):** What precise metric tell us if the user is happy? (e.g., latency of 99% of requests).
+3.  **SLOs (Service Level Objectives):** The numerical target for that SLI (e.g., 99.9% of requests must be successful).
+4.  **Error Budgets:** 100% - SLO. This is the margin we have for failure. If depleted, releases are frozen to stabilize.
+5.  **Toil Reduction:** Automating manual, repetitive tasks with no strategic value that scale linearly with the service.
+6.  **Monitoring & Observability:** Implementing the 5 Golden Signals. Moving from "is the server up?" to "does the service work for the user?".
+7.  **Incident Response:** Having clear roles (Incident Commander, Comms, Ops) and defined procedures before the fire starts.
+8.  **Postmortems:** Detailed analysis after an incident. The goal is not to find culprits, but to fix the process or system that allowed the failure.
+9.  **Capacity Planning:** Predicting future growth (organic or launch-driven) to ensure sufficient resources before saturation.
+10. **Chaos Engineering & Resilience:** Breaking things on purpose in controlled environments to train the team and validate recovery systems.
 
-### Definiciones
+---
 
-*   **SLI (Indicador):** Medida cuantitativa de algún aspecto del nivel de servicio.
-    *   `SLI = (Eventos Buenos / Eventos Totales) * 100`
-*   **SLO (Objetivo):** Valor objetivo o rango de valores para un nivel de servicio medido por un SLI.
+## Part 3: Deep Dive - SLOs & SLIs
+
+The core of SRE is data-driven decision making, and for that, we need to define what "reliability" means.
+
+### Definitions
+
+*   **SLI (Indicator):** A quantitative measure of some aspect of the level of service.
+    *   `SLI = (Good Events / Total Events) * 100`
+*   **SLO (Objective):** A target value or range of values for a service level that is measured by an SLI.
     *   `SLI >= SLO`
 
-### Ejemplo Práctico: Servicio de Login
+### Practical Example: Login Service
 
-Imagina un servicio de autenticación.
+Imagine an authentication service.
 
-**Paso 1: Elegir el SLI**
-No nos importa si la CPU está al 10% o al 90% si el usuario entra rápido.
-*   *Métrica:* Disponibilidad (Latencia + Correctitud).
-*   *Definición:* La proporción de peticiones válidas a `/login` que responden con HTTP 200 y en menos de 500ms.
+**Step 1: Choose the SLI**
+We don't care if CPU is at 10% or 90% if the user logs in fast.
+*   *Metric:* Availability (Latency + Correctness).
+*   *Definition:* The proportion of valid requests to `/login` that respond with HTTP 200 and in less than 500ms.
 
-**Paso 2: Definir el SLO**
-¿Necesitamos 100%? Probablemente no, y es muy caro.
-*   *Objetivo:* 99.9% mensual.
+**Step 2: Define the SLO**
+Do we need 100%? Probably not, and it's very expensive.
+*   *Target:* 99.9% monthly.
 
-**Paso 3: Calcular el Error Budget**
-En una ventana de 30 días (aprox 43,200 minutos), un 99.9% de disponibilidad significa:
-*   **Tiempo permitido de caída:** 43.2 minutos (`43,200 * (1 - 0.999)`).
+**Step 3: Calculate the Error Budget**
+In a 30-day window (approx 43,200 minutes), 99.9% availability means:
+*   **Allowed Downtime:** 43.2 minutes (`43,200 * (1 - 0.999)`).
 
-### Ejercicio de Taller
+### Workshop Exercise
 
-*Escenario:* Recibes 1,000,000 de peticiones a la semana. Tu SLO es 99.95%.
+*Scenario:* You receive 1,000,000 requests per week. Your SLO is 99.95%.
 
-1.  **¿Cuántas peticiones pueden fallar?**
+1.  **How many requests can fail?**
     *   Total: 1,000,000
-    *   Permitido fallar: 0.05% -> `0.0005 * 1,000,000` = **500 peticiones**.
+    *   Allowed to fail: 0.05% -> `0.0005 * 1,000,000` = **500 requests**.
 
-2.  **Situación:** Un deploy el martes causó 200 errores 500 durante 5 minutos.
-    *   Consumo del presupuesto: 200 / 500 = 40%.
-    *   *Decisión:* Todavía tienes 60% del presupuesto. Puedes seguir lanzando features, pero con cuidado.
+2.  **Situation:** A Tuesday deploy caused 200 HTTP 500 errors over 5 minutes.
+    *   Budget Consumption: 200 / 500 = 40%.
+    *   *Decision:* You still have 60% of the budget. You can keep releasing features, but with caution.
