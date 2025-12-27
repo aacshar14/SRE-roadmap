@@ -27,6 +27,8 @@ For effective observability, Google recommends focusing on these key signals. We
 4.  **Error Budgets:** 100% - SLO. This is the margin we have for failure. If depleted, releases are frozen to stabilize.
 5.  **Toil Reduction:** Automating manual, repetitive tasks with no strategic value that scale linearly with the service.
 6.  **Monitoring & Observability:** Implementing the 5 Golden Signals. Moving from "is the server up?" to "does the service work for the user?".
+    *   **Synthetic Monitoring:** Simulated checks (e.g., uptime bots). Good for baseline availability.
+    *   **RUM (Real User Monitoring):** Measuring the actual experience of real users in their browsers (load times, JS errors). This is the ultimate source of truth for user happiness.
 7.  **Incident Response:** Having clear roles (Incident Commander, Comms, Ops) and defined procedures before the fire starts.
 8.  **Postmortems:** Detailed analysis after an incident. The goal is not to find culprits, but to fix the process or system that allowed the failure.
 9.  **Capacity Planning:** Predicting future growth (organic or launch-driven) to ensure sufficient resources before saturation.
