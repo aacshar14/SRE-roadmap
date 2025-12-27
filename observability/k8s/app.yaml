@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: golden-signals-app
+  labels:
+    app: golden-signals
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: golden-signals
+  template:
+    metadata:
+      labels:
+        app: golden-signals
+    spec:
+      containers:
+      - name: app
+        image: aacshar14/golden-signals-app:latest # Placeholder image name, user would build/push this
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: golden-signals-app
+  labels:
+    app: golden-signals
+spec:
+  selector:
+    app: golden-signals
+  ports:
+    - port: 5000
+      targetPort: 5000
+  type: ClusterIP
