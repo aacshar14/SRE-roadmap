@@ -1,0 +1,68 @@
+pipeline:
+  name: SRE-Observability-Demo
+  identifier: SREObservabilityDemo
+  projectIdentifier: SRE_Roadmap
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: Build Golden Signals App
+        identifier: Build_Golden_Signals_App
+        description: Build Docker image and push to registry
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: BuildAndPushDockerRegistry
+                  name: Build and Push Docker
+                  identifier: Build_and_Push_Docker
+                  spec:
+                    connectorRef: <+input> # e.g. DockerHub_Connector
+                    repo: aacshar14/golden-signals-app
+                    tags:
+                      - <+pipeline.sequenceId>
+                      - latest
+                    dockerfile: observability/app/Dockerfile
+                    context: observability/app
+    - stage:
+        name: Deploy to Kubernetes
+        identifier: Deploy_to_Kubernetes
+        description: Apply manifests to K8s cluster
+        type: Deployment
+        spec:
+          deploymentType: Kubernetes
+          service:
+            serviceRef: <+input> # e.g. golden_signals_service
+          environment:
+            environmentRef: <+input> # e.g. dev_environment
+            deployToAll: false
+            infrastructureDefinitions:
+              - <+input> # e.g. k8s_infra_def
+          execution:
+            steps:
+              - step:
+                  name: Rollout Deployment
+                  identifier: Rollout_Deployment
+                  type: K8sRollingDeploy
+                  timeout: 10m
+                  spec:
+                    skipDryRun: false
+                    pruningEnabled: false
+              - step:
+                  name: Apply Observability Stack
+                  identifier: Apply_Observability_Stack
+                  type: K8sApply
+                  timeout: 10m
+                  spec:
+                    filePaths:
+                      - observability/k8s/prometheus.yaml
+                      - observability/k8s/grafana.yaml
+                    skipDryRun: false
