@@ -8,5 +8,7 @@ Configuration for automating the build and deployment via Harness.io.
     *   **Deploy Stage:** Deploys manifests from `../k8s/` to a Kubernetes cluster.
 
 ## Setup
+*   **[GitHub App Guide](./github-app-setup.md):** Detailed steps to create the GitHub App for proper integration.
+
 In Harness, use "Import from Git" and point to this file path:
 `observability/harness/pipeline.yaml`
