@@ -12,6 +12,11 @@ This repository contains a roadmap for learning and developing Site Reliability 
 
 ## Structure
 
+### 🚀 Start Here
+- **[Onboarding Checklist](./onboarding-checklist.md):** New to the project? Start here.
+- **[Refinement Backlog](./backlog.md):** Known issues and future roadmap.
+
+### Modules
 - [Workshop](./workshop/README.md): 10 steps and 5 Golden Signals.
 - [Governance](./governance/README.md): RACI Matrix and Roles.
 - [Incident Response](./incident-response/README.md): Checklists, SLAs, and Automation.
