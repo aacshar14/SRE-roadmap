@@ -13,4 +13,11 @@ This repository contains a roadmap for learning and developing Site Reliability 
 ## Structure
 
 - [Workshop](./workshop/README.md): 10 steps and 5 Golden Signals.
+- [Governance](./governance/README.md): RACI Matrix and Roles.
+- [Incident Response](./incident-response/README.md): Checklists, SLAs, and Automation.
+- [Observability](./observability/README.md): Golden Signals App, Prometheus, Grafana, and K8s.
+  - [Harness Pipeline](./observability/harness/README.md): CI/CD Configuration.
+- [Chaos Engineering](./chaos/README.md): Stress testing and failure injection.
+- [Infrastructure as Code](./iac/README.md): Terraform (Docker & Azure).
+
 
