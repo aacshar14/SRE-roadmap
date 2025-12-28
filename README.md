@@ -19,5 +19,8 @@ This repository contains a roadmap for learning and developing Site Reliability 
   - [Harness Pipeline](./observability/harness/README.md): CI/CD Configuration.
 - [Chaos Engineering](./chaos/README.md): Stress testing and failure injection.
 - [Infrastructure as Code](./iac/README.md): Terraform (Docker & Azure).
+- [Capacity Planning](./capacity/README.md): Forecasting and resource math.
+- [Toil Management](./toil/README.md): Tracking and eliminating manual work.
+
 
 
