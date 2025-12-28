@@ -1,0 +1,25 @@
+resource "azurerm_resource_group" "sre_rg" {
+  name     = var.resource_group_name
+  location = var.location
+}
+
+resource "azurerm_kubernetes_cluster" "aks" {
+  name                = "sre-aks-cluster"
+  location            = azurerm_resource_group.sre_rg.location
+  resource_group_name = azurerm_resource_group.sre_rg.name
+  dns_prefix          = "sre-k8s"
+
+  default_node_pool {
+    name       = "default"
+    node_count = 1
+    vm_size    = "Standard_DS2_v2"
+  }
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  tags = {
+    Environment = "SRE-Demo"
+  }
+}
