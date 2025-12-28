@@ -1,98 +1,101 @@
 import os
-import datetime
-import re
 import json
+import argparse
+from datetime import datetime
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-TEMPLATE_PATH = os.path.join(BASE_DIR, '../incident-response/postmortem-template.md')
-OUTPUT_DIR = os.path.join(BASE_DIR, '../incident-response/postmortems')
-CONFIG_PATH = os.path.join(BASE_DIR, '../incident-response/config/metadata.json')
+# 12-Factor: Configuration via Environment or Relative Path (Never Hardcoded)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DEFAULT_CONFIG_PATH = os.path.join(BASE_DIR, 'incident-response', 'config', 'metadata.json')
+CONFIG_PATH = os.environ.get('SRE_METADATA_PATH', DEFAULT_CONFIG_PATH)
 
-def slugify(text):
-    text = text.lower()
-    return re.sub(r'[\W_]+', '-', text).strip('-')
+def load_config():
+    if not os.path.exists(CONFIG_PATH):
+        print(f"Error: Config file not found at {CONFIG_PATH}")
+        return None
+    with open(CONFIG_PATH, 'r') as f:
+        return json.load(f)
 
-def load_metadata():
-    if os.path.exists(CONFIG_PATH):
-        try:
-            with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except Exception as e:
-            print(f"Warning: Could not load metadata.json: {e}")
-    return {}
+def save_config(data):
+    try:
+        with open(CONFIG_PATH, 'w') as f:
+            json.dump(data, f, indent=4)
+        print(f"Successfully updated configuration at {CONFIG_PATH}")
+    except Exception as e:
+        print(f"Failed to save config: {e}")
+
+def add_service_interactive(config):
+    print("\n--- Add New Service ---")
+    service_name = input("Service Name (e.g., Payment-Gateway): ").strip()
+    owner = input("Owning Team (e.g., Checkout-Squad): ").strip()
+    tier = input("Service Tier (A/B/C): ").strip().upper()
+    
+    if "services" not in config:
+        config["services"] = []
+        
+    # Check for duplicates
+    for s in config["services"]:
+        if s["name"].lower() == service_name.lower():
+            print("Error: Service already exists!")
+            return config
+
+    new_service = {
+        "name": service_name,
+        "owner": owner,
+        "tier": tier
+    }
+    config["services"].append(new_service)
+    print(f"Service '{service_name}' added to memory.")
+    return config
+
+def generate_postmortem(config):
+    print("\n--- Generate Postmortem ---")
+    if "services" not in config or not config["services"]:
+        print("No services found in metadata. Please add one first.")
+        return
+
+    print("Select Service:")
+    for idx, svc in enumerate(config["services"]):
+        print(f"{idx + 1}. {svc['name']} (Tier {svc['tier']})")
+    
+    try:
+        choice = int(input("Enter number: ")) - 1
+        selected_service = config["services"][choice]
+    except (ValueError, IndexError):
+        print("Invalid selection.")
+        return
+
+    title = input("Incident Title: ")
+    filename = f"postmortem-{datetime.now().strftime('%Y%m%d')}-{selected_service['name'].lower()}.md"
+    
+    content = f"""# Postmortem: {title}
+> **BLAMELESS DISCLAIMER:** This document is blameless.
+
+- **Service:** {selected_service['name']}
+- **Tier:** {selected_service['tier']}
+- **Owner:** {selected_service['owner']}
+- **Date:** {datetime.now().strftime('%Y-%m-%d')}
+
+## What Happened?
+...
+"""
+    with open(filename, 'w') as f:
+        f.write(content)
+    print(f"\nGenerated: {filename}")
 
 def main():
-    print("--- SRE Postmortem Generator ---")
-    
-    # 0. Load Metadata
-    metadata = load_metadata()
-    service_name = metadata.get("service_name", "Unknown-Service")
-    team_name = metadata.get("team_name", "Unknown-Team")
-    emails = ", ".join(metadata.get("notification_emails", []))
-    tags = ", ".join(metadata.get("auto_tags", []))
+    parser = argparse.ArgumentParser(description="SRE Postmortem Tool")
+    parser.add_argument('--add-service', action='store_true', help="Interactive mode to register a new service")
+    args = parser.parse_args()
 
-    print(f"Loaded Context: Service={service_name}, Team={team_name}")
-
-    # 1. Gather Input
-    title = input("Enter Incident Title (e.g. Login Failure): ").strip()
-    if not title:
-        print("Error: Title is required.")
+    config = load_config()
+    if not config:
         return
 
-    severity = input("Enter Severity (SEV-1, SEV-2...): ").strip().upper()
-    authors = input("Enter Authors (comma separated): ").strip()
-    
-    # 2. Prepare Metadata
-    today = datetime.date.today().isoformat() # YYYY-MM-DD
-    filename = f"{today}-{slugify(title)}.md"
-    output_path = os.path.join(OUTPUT_DIR, filename)
-
-    # 3. Read Template
-    if not os.path.exists(TEMPLATE_PATH):
-        print(f"Error: Template not found at {TEMPLATE_PATH}")
-        return
-
-    with open(TEMPLATE_PATH, 'r', encoding='utf-8') as f:
-        content = f.read()
-
-    # 4. Inject Metadata & Replace Placeholders
-    # We will construct a new header with more info
-    header = f"""# Postmortem: {title}
-> **Auto-Generated by SRE Bot**
-
-**Service:** {service_name} | **Team:** {team_name}
-**Date:** {today}
-**Authors:** {authors}
-**Severity:** {severity}
-**Tags:** {tags}
-**Notifications Sent To:** {emails}
-
----
-"""
-    # Remove the generic header lines from template to avoid duplication if present
-    # This is a simple scrape to remove the top generic block if it matches known structure
-    # For now, we just append the template content below our rich header.
-    
-    # Filter out lines commonly found in the raw template top block to replace them cleanly
-    lines = content.splitlines()
-    cleaned_content = []
-    skip_header = True
-    for line in lines:
-        if line.startswith("**Date:** YYYY") or line.startswith("**Authors:**") or line.startswith("**Status:**") or line.startswith("**Severity:** ["):
-            continue
-        cleaned_content.append(line)
-    
-    final_body = "\n".join(cleaned_content)
-    
-    # 5. Write File
-    if not os.path.exists(OUTPUT_DIR):
-        os.makedirs(OUTPUT_DIR)
-
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(header + final_body)
-
-    print(f"\nSUCCESS! Postmortem created at:\n{os.path.abspath(output_path)}")
-    print(f"info: Action required -> Check {emails} for automated routing rules.")
+    if args.add_service:
+        updated_config = add_service_interactive(config)
+        save_config(updated_config)
+    else:
+        generate_postmortem(config)
 
 if __name__ == "__main__":
     main()

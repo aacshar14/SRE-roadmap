@@ -1,5 +1,7 @@
 # Postmortem Template
 
+> **BLAMELESS DISCLAIMER:** This document is **blameless**. We focus on the process and technology, not the people. If a human error occurred, it is treated as a system defect that allowed the error to happen.
+
 **Date:** YYYY-MM-DD
 **Authors:**
 **Status:** [Draft | Review | Complete]
